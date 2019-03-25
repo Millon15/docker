@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+  webserver:
+    build: 
+      context: ./webserver
+    container_name: 'my-webserver'
+    restart: 'always'
+    ports:
+      - "80:80"
+    links: 
+      - mysql
+    volumes: 
+      - ${DOCUMENT_ROOT-./www}:/var/www/html
+      - ${LOG_DIR-./logs/apache2}:/var/log/apache2
+
+  mysql:
+    image: mysql:5.7
+    container_name: 'my-mysql'
+    restart: 'always'
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: mysqltest
+      MYSQL_DATABASE: mysqltest
+      MYSQL_USER: mysqltest
+      MYSQL_PASSWORD: mysqltest
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: 'my-phpmyadmin'
+    links:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    ports:
+      - '8080:80'
+    volumes: 
+      - /sessions
+
+# docker-compose up -d --build
